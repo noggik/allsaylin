@@ -1,5 +1,4 @@
-local selectedMap = "School" -- School หรือ Sewers
-local selectedMode = "Normal" -- Normal หรือ Hard หรือ Nightmare
+
 
 local Players = game:GetService("Players")
 local player = game.Players.LocalPlayer
