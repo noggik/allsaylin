@@ -70,6 +70,11 @@ local themes = {
 					['Toggle Value'] = Color3.fromRGB(44, 42, 62),
 				}
 			},
+            ['User Profile'] = {
+    ['Background'] = Color3.fromRGB(24, 24, 31),
+    ['Username'] = Color3.fromRGB(255, 255, 255),
+    ['Display Name'] = Color3.fromRGB(178, 178, 178),
+},
 			['Color Picker'] = {
 				['Background'] = Color3.fromRGB(29, 28, 38),
 				['Color Select'] = {
@@ -118,6 +123,11 @@ local themes = {
 				['Slider Bar Value'] = Color3.fromRGB(70, 130, 180),
 				['Circle Value'] = Color3.fromRGB(255, 255, 255)
 			},
+            ['User Profile'] = {
+    ['Background'] = Color3.fromRGB(20, 20, 20),
+    ['Username'] = Color3.fromRGB(230, 230, 230),
+    ['Display Name'] = Color3.fromRGB(150, 150, 150),
+},
 			['Code'] = {
 				['Background'] = ColorSequence.new{ColorSequenceKeypoint.new(0, Color3.fromRGB(25, 25, 25)), ColorSequenceKeypoint.new(1, Color3.fromRGB(25, 25, 25))},
 				['Background Code'] = Color3.fromRGB(35, 35, 35),
@@ -202,6 +212,24 @@ do
 				end
 			end
 		end
+    local profileColors = {
+        ['User Profile.Background'] = getColorFromPath(st, 'User Profile.Background'),
+        ['User Profile.Username'] = getColorFromPath(st, 'User Profile.Username'), 
+        ['User Profile.Display Name'] = getColorFromPath(st, 'User Profile.Display Name')
+    }
+
+    for colorPath, color in pairs(profileColors) do
+        if color and SaveTheme[colorPath] then
+            for _, obj in pairs(SaveTheme[colorPath]) do
+                if obj:IsA("Frame") then
+                    obj.BackgroundColor3 = color
+                elseif obj:IsA("TextLabel") then
+                    obj.TextColor3 = color
+                end
+            end
+        end
+    end
+
 	end
 
 	local IconList = loadstring(game:HttpGet('https://raw.githubusercontent.com/Dummyrme/Library/refs/heads/main/Icon.lua'))()
@@ -335,6 +363,87 @@ do
 		t.InputChanged:Connect(function(i) if i.UserInputType == Enum.UserInputType.MouseMovement or i.UserInputType == Enum.UserInputType.Touch then b = i end end)
 		U.InputChanged:Connect(function(i) if i == b and a then u(i) end end)
 	end
+
+function createUserProfile(parent)
+    local Players = game:GetService("Players")
+    local player = Players.LocalPlayer
+    
+    local ProfileFrame = Instance.new("Frame")
+    ProfileFrame.Name = "UserProfile"
+    ProfileFrame.Parent = parent
+    ProfileFrame.BackgroundColor3 = Color3.fromRGB(24, 24, 31)
+    ProfileFrame.BorderSizePixel = 0
+    ProfileFrame.Size = UDim2.new(1, 0, 0, 60)
+    ProfileFrame.Position = UDim2.new(0, 0, 1, -70)
+    ProfileFrame.AnchorPoint = Vector2.new(0, 0)
+    
+    addToTheme('User Profile.Background', ProfileFrame)
+    
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0, 6)
+    UICorner.Parent = ProfileFrame
+    
+    local ProfileImage = Instance.new("ImageLabel")
+    ProfileImage.Name = "ProfileImage"
+    ProfileImage.Parent = ProfileFrame
+    ProfileImage.BackgroundTransparency = 1
+    ProfileImage.Size = UDim2.new(0, 40, 0, 40)
+    ProfileImage.Position = UDim2.new(0, 10, 0.5, 0)
+    ProfileImage.AnchorPoint = Vector2.new(0, 0.5)
+    
+    local ImageCorner = Instance.new("UICorner")
+    ImageCorner.CornerRadius = UDim.new(1, 0)
+    ImageCorner.Parent = ProfileImage
+    
+    local UsernameLabel = Instance.new("TextLabel")
+    UsernameLabel.Name = "UsernameLabel"
+    UsernameLabel.Parent = ProfileFrame
+    UsernameLabel.BackgroundTransparency = 1
+    UsernameLabel.Size = UDim2.new(1, -65, 0, 20)
+    UsernameLabel.Position = UDim2.new(0, 60, 0, 8)
+    UsernameLabel.Text = player.Name
+    UsernameLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    UsernameLabel.TextSize = 14
+    UsernameLabel.Font = Enum.Font.GothamBold
+    UsernameLabel.TextXAlignment = Enum.TextXAlignment.Left
+    
+    addToTheme('User Profile.Username', UsernameLabel)
+    
+    local DisplayNameLabel = Instance.new("TextLabel")
+    DisplayNameLabel.Name = "DisplayNameLabel"
+    DisplayNameLabel.Parent = ProfileFrame
+    DisplayNameLabel.BackgroundTransparency = 1
+    DisplayNameLabel.Size = UDim2.new(1, -65, 0, 16)
+    DisplayNameLabel.Position = UDim2.new(0, 60, 0, 32)
+    DisplayNameLabel.Text = "@" .. player.DisplayName
+    DisplayNameLabel.TextColor3 = Color3.fromRGB(178, 178, 178)
+    DisplayNameLabel.TextSize = 11
+    DisplayNameLabel.Font = Enum.Font.Gotham
+    DisplayNameLabel.TextXAlignment = Enum.TextXAlignment.Left
+    DisplayNameLabel.TextTransparency = 0.4
+    
+    addToTheme('User Profile.Display Name', DisplayNameLabel)
+    
+    spawn(function()
+        local success, thumbnailContent = pcall(function()
+            return Players:GetUserThumbnailAsync(
+                player.UserId,
+                Enum.ThumbnailType.HeadShot,
+                Enum.ThumbnailSize.Size420x420
+            )
+        end)
+        
+        if success then
+            ProfileImage.Image = thumbnailContent
+        else
+            ProfileImage.Image = "rbxasset://textures/ui/GuiImagePlaceholder.png"
+        end
+    end)
+    
+    return ProfileFrame
+end
+
+
 	function click(p)
 		local Click = Instance.new("TextButton")
 
@@ -4709,5 +4818,6 @@ function Library:CreateWindow(p)
 	return Tabs
 end
 
-
+local userProfile = createUserProfile(MainFrame)
 return Library
+
