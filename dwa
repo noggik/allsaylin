@@ -1,0 +1,1 @@
+loadstring(game:HttpGet("https://gitlab.com/cxdnzydev-all/hub/-/raw/main/allmap-Xerinal.lua?ref_type=heads"))()
